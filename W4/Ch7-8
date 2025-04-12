@@ -1,0 +1,151 @@
+# 7장. 복수의 테이블 다루기
+
+## 1. 집합 연산 (Set Operations)
+
+### UNION (합집합)
+```sql
+SELECT column_name FROM table1
+UNION
+SELECT column_name FROM table2;
+```
+
+### UNION ALL (중복 포함 합집합)
+```sql
+SELECT column_name FROM table1
+UNION ALL
+SELECT column_name FROM table2;
+```
+
+### INTERSECT (교집합)
+```sql
+SELECT column_name FROM table1
+INTERSECT
+SELECT column_name FROM table2;
+```
+
+### EXCEPT (차집합) - Oracle은 `MINUS`
+```sql
+SELECT column_name FROM table1
+EXCEPT
+SELECT column_name FROM table2;
+```
+
+---
+
+## 2. 테이블 결합 (Join)
+
+### 1) Cross Join (교차 결합 / 곱집합)
+```sql
+SELECT * FROM tableA, tableB;
+```
+
+### 2) Inner Join (내부 결합)
+```sql
+SELECT A.name, B.stock
+FROM products A
+INNER JOIN inventory B
+ON A.code = B.code;
+```
+
+### 3) Left Join (외부 결합)
+```sql
+SELECT P.name, I.stock
+FROM products P
+LEFT JOIN inventory I
+ON P.code = I.code;
+```
+
+### 4) Self Join (자기결합)
+```sql
+SELECT E1.name AS emp_name, E2.name AS mgr_name
+FROM employees E1
+JOIN employees E2
+ON E1.manager_id = E2.id;
+```
+
+---
+
+## 3. Join 방향 차이
+
+- `UNION` → 행 방향 확장  
+- `JOIN` → 열 방향 확장
+
+---
+
+# 8장. 데이터베이스 설계
+
+## 1. 테이블 생성
+
+```sql
+CREATE TABLE products (
+  code CHAR(4) PRIMARY KEY,
+  name VARCHAR(30),
+  maker VARCHAR(30),
+  price INT,
+  category VARCHAR(30)
+);
+
+CREATE TABLE inventory (
+  code CHAR(4),
+  stock INT,
+  date DATE
+);
+```
+
+---
+
+## 2. 자동 증가 키 (MySQL 기준)
+
+```sql
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50)
+);
+```
+
+---
+
+## 3. ER 다이어그램 개념
+
+- Entity: 테이블  
+- Attribute: 컬럼  
+- Relation: 테이블 간 연결 (1:1, 1:N, N:M)
+
+---
+
+## 4. 정규화 단계 요약
+
+- **1NF**: 반복 속성 제거 → 세로로 정리  
+- **2NF**: 부분 종속 제거 (복합키 → 나눔)  
+- **3NF**: 속성 간 종속 제거 (비핵심 속성 정리)
+
+---
+
+## 5. 트랜잭션 사용법
+
+### 기본 구조
+```sql
+START TRANSACTION;
+
+-- 작업 1
+INSERT INTO orders VALUES (...);
+
+-- 작업 2
+INSERT INTO order_items VALUES (...);
+
+COMMIT;
+```
+
+### ROLLBACK 예시
+```sql
+START TRANSACTION;
+
+UPDATE account SET balance = balance - 100 WHERE id = 1;
+UPDATE account SET balance = balance + 100 WHERE id = 2;
+
+ROLLBACK;
+```
+
+---
+
+> 참고: JOIN, 정규화, 트랜잭션은 실무에서 매우 자주 등장하므로 반드시 이해하고 연습할 것
